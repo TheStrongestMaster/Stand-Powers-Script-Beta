@@ -1,25 +1,10 @@
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
-
+local DrRayLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/AZYsGithub/DrRay-UI-Library/main/DrRay.lua"))()
 local player = game.Players.LocalPlayer
 local Workspace = game:GetService("Workspace")
 
--- Janela principal
-local Window = OrionLib:MakeWindow({
-    Name = "TheStrongestMaster Scripts",
-    HidePremium = false,
-    SaveConfig = true,
-    ConfigFolder = "OrionTest"
-})
+local window = DrRayLibrary:Load("TheStrongestMaster Scripts", "Default")
 
--- Notificação de boas-vindas
-OrionLib:MakeNotification({
-    Name = "Welcome!",
-    Content = "Welcome to my hub!",
-    Image = "rbxassetid://4483345998",
-    Time = 5
-})
-
--- Função para teleportar o jogador
+-- Função para teleportar o jogador usando CFrame
 local function teleportTo(position)
     if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
         player.Character.HumanoidRootPart.CFrame = CFrame.new(position)
@@ -45,12 +30,7 @@ local function teleportToClosestObject(objectName)
     if closestObject then
         teleportTo(closestObject.Position)
     else
-        OrionLib:MakeNotification({
-            Name = "Aviso",
-            Content = "Nenhum " .. objectName .. " encontrado!",
-            Image = "rbxassetid://4483345998",
-            Time = 5
-        })
+        warn("Nenhum " .. objectName .. " encontrado!")
     end
 end
 
@@ -74,78 +54,81 @@ local function addESP(objectName, displayName, textColor)
 end
 
 -- Aba ESP
-local ESPTab = Window:MakeTab({
-    Name = "Esp",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
+local ESPTab = DrRayLibrary.newTab("ESP", "ImageIdHere")
 
-ESPTab:AddButton({
-    Name = "ESP Locacaca Fruta",
-    Callback = function()
-        addESP("Locacaca Fruit", "Locacaca Fruit", Color3.new(1, 0, 0))
-    end
-})
+ESPTab.newButton("ESP Locacaca Fruta", "Adiciona ESP para Locacaca Fruit", function()
+    addESP("Locacaca Fruit", "Locacaca Fruit", Color3.new(1, 0, 0))
+end)
 
-ESPTab:AddButton({
-    Name = "ESP Flecha",
-    Callback = function()
-        addESP("Arrow", "Flecha", Color3.new(1, 1, 0))
-    end
-})
+ESPTab.newButton("ESP Flecha", "Adiciona ESP para Flechas", function()
+    addESP("Arrow", "Flecha", Color3.new(1, 1, 0))
+end)
 
-ESPTab:AddButton({
-    Name = "Desativar todas",
-    Callback = function()
-        for _, obj in ipairs(Workspace:GetDescendants()) do
-            if obj:FindFirstChild("BillboardGui") then
-                obj.BillboardGui:Destroy()
-            end
+ESPTab.newButton("Desativar todas", "Remove todos os ESPs", function()
+    for _, obj in ipairs(Workspace:GetDescendants()) do
+        if obj:FindFirstChild("BillboardGui") then
+            obj.BillboardGui:Destroy()
         end
     end
-})
+end)
 
 -- Aba Teleporte
-local TeleportTab = Window:MakeTab({
-    Name = "Teleport",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
+local TeleportTab = DrRayLibrary.newTab("Teleport", "ImageIdHere")
 
-TeleportTab:AddButton({
-    Name = "Teleportar para Fruta",
-    Callback = function()
-        teleportToClosestObject("Locacaca Fruit")
+TeleportTab.newButton("Teleportar para Fruta", "Teleporta para Locacaca Fruit mais próxima", function()
+    teleportToClosestObject("Locacaca Fruit")
+end)
+
+TeleportTab.newButton("Teleportar para Flecha", "Teleporta para a Flecha mais próxima", function()
+    teleportToClosestObject("Arrow")
+end)
+
+TeleportTab.newButton("Teleportar para Pilar Man", "Teleporta para Pilar Man", function()
+    teleportTo(Vector3.new(-210.0548858642578, 141.8389129638672, 1180.2388916015625)) -- Usando CFrame
+end)
+
+TeleportTab.newButton("Teleportar para Loja Mr Monster", "Teleporta para a Loja Mr Monster", function()
+    teleportTo(Vector3.new(596.81884765625, 137.6195526123047, -382.5865478515625)) -- Usando CFrame
+end)
+
+TeleportTab.newButton("Teleportar para Correio", "Teleporta para o Correio", function()
+    teleportTo(Vector3.new(-249.5177001953125, 863.7474975585938, -1233.9884033203125)) -- Usando CFrame
+end)
+
+TeleportTab.newButton("Teleportar para Banco", "Teleporta para o Banco", function()
+    teleportTo(Vector3.new(-391.6630554199219, 136.99501037597656, 160.79986572265625)) -- Usando CFrame
+end)
+
+TeleportTab.newButton("Teleportar para Praia", "Teleporta para a Praia", function()
+    teleportTo(Vector3.new(-577.1709594726562, 137.1058349609375, -26.43917465209961)) -- Usando CFrame
+end)
+
+TeleportTab.newButton("Teleportar para Arcade", "Teleporta para o Arcade", function()
+    teleportTo(Vector3.new(-113.06327056884766, 138.19393920898438, 48.84617614746094)) -- Usando CFrame
+end)
+
+TeleportTab.newButton("Remover Tempo de Espera", "Remove o tempo de espera de flechas, frutas e etc", function()
+    local function removeHoldDuration(prompt)
+        if prompt:IsA("ProximityPrompt") and not prompt:GetAttribute("Optimized") then
+            prompt.HoldDuration = 0
+            prompt:SetAttribute("Optimized", true)
+        end
     end
-})
 
-TeleportTab:AddButton({
-    Name = "Teleportar para Flecha",
-    Callback = function()
-        teleportToClosestObject("Arrow")
+    local function scanAndOptimize(folder)
+        for _, descendant in ipairs(folder:GetDescendants()) do
+            removeHoldDuration(descendant)
+        end
     end
-})
 
-TeleportTab:AddButton({
-    Name = "Teleportar para Banco",
-    Callback = function()
-        teleportTo(Vector3.new(-391.6630554199219, 136.99501037597656, 160.79986572265625))
-    end
-})
+    -- Primeira execução
+    scanAndOptimize(Workspace)
 
-TeleportTab:AddButton({
-    Name = "Teleportar para Praia",
-    Callback = function()
-        teleportTo(Vector3.new(-577.1709594726562, 137.1058349609375, -26.43917465209961))
-    end
-})
+    -- Monitora o jogo para novos prompts
+    Workspace.DescendantAdded:Connect(function(descendant)
+        removeHoldDuration(descendant)
+    end)
+end)
 
-TeleportTab:AddButton({
-    Name = "Teleportar para Arcade",
-    Callback = function()
-        teleportTo(Vector3.new(-113.06327056884766, 138.19393920898438, 48.84617614746094))
-    end
-})
-
--- Inicializando a interface
-OrionLib:Init()
+-- Inicialização da interface
+window:Ready()
